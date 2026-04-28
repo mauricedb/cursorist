@@ -1,0 +1,51 @@
+---
+description: Hybrid application architecture with clear layer boundaries and safe data access patterns.
+alwaysApply: true
+---
+# Application Architecture
+
+Use a hybrid architecture: organize by feature, and keep clear layers inside each feature.
+
+## Target Structure
+
+- Feature-first folders for product areas (for example `billing`, `users`, `projects`).
+- Inside each feature, use logical layers:
+  - `ui` - components, pages, presentation code
+  - `application` - use-cases, orchestration, transactions
+  - `domain` - business rules, entities, pure logic
+  - `infrastructure` - Prisma repositories, external API adapters
+
+## Required Boundaries
+
+### 1) UI must not access the database directly
+
+- Never import Prisma client in `app/**` or `components/**`.
+- UI may call Server Actions, Route Handlers, or typed service functions only.
+
+### 2) Server Actions and Route Handlers call services
+
+- Keep handlers thin: parse input, call application service, return response.
+- Avoid embedding business logic or direct Prisma calls inside handlers.
+
+### 3) Validate input at boundaries
+
+- Validate request/action inputs before invoking application services.
+- Reject invalid data early with clear, typed errors.
+
+### 4) Keep domain logic framework-agnostic
+
+- Domain code must not depend on Next.js, React, Request/Response, or Prisma APIs.
+- Domain functions should be deterministic and easy to unit test.
+
+## Balanced Strictness
+
+- Enforce these rules by default.
+- Allow exceptions only when there is a documented performance or platform constraint.
+- If an exception is required, keep it local, comment the reason, and avoid spreading the pattern.
+
+## Quick Anti-Patterns
+
+- Prisma import in UI files.
+- Business logic written directly in `route.ts` or Server Action files.
+- Skipping validation for user-provided input.
+- Domain modules importing framework or transport-layer types.
