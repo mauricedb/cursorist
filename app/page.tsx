@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 const featureBlocks = [
   {
@@ -64,9 +65,12 @@ export default function Home() {
               stay focused, and finish the work that matters most.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button className="rounded-full bg-[#de5f3c] px-6 text-white hover:bg-[#c85332]">
+              <Link
+                href="/today"
+                className="inline-flex items-center justify-center rounded-full bg-[#de5f3c] px-6 py-2 text-sm font-medium text-white hover:bg-[#c85332]"
+              >
                 Start free
-              </Button>
+              </Link>
               <Button
                 variant="outline"
                 className="rounded-full border-[#d8cdbf] bg-transparent px-6 text-[#4f4742]"
