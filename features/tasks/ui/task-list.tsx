@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import type { Task } from "@/features/tasks/domain/task";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 type TaskListProps = {
   initialTasks: Task[];
@@ -78,18 +80,20 @@ export function TaskList({ initialTasks, emptyMessage, mode }: TaskListProps) {
             key={task.id}
             className="flex items-start gap-3 rounded-lg border border-[#efe5da] bg-[#fffdf9] px-4 py-3"
           >
-            <input
-              type="checkbox"
-              className="mt-0.5 h-4 w-4 accent-[#6b8f5a]"
+            <Checkbox
+              id={`task-checkbox-${task.id}`}
+              className="mt-0.5 data-[state=checked]:bg-[#6b8f5a] data-[state=checked]:border-[#6b8f5a]"
               checked={task.completed}
               disabled={pendingTaskIds.includes(task.id)}
-              onChange={(event) => {
-                void markTaskCompletion(task.id, event.target.checked);
+              onCheckedChange={(checked) => {
+                void markTaskCompletion(task.id, checked === true);
               }}
               aria-label={`Mark "${task.title}" as done`}
             />
             <div>
-              <p className="text-sm font-medium">{task.title}</p>
+              <Label htmlFor={`task-checkbox-${task.id}`} className="text-sm font-medium">
+                {task.title}
+              </Label>
               <p className={`mt-1 text-xs ${getDueDateColorClass(task, todayKey)}`}>
                 Due: {task.dueDateLabel}
               </p>
