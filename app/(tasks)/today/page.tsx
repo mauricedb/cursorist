@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getTodayAndOverdueTasks } from "@/features/tasks/infrastructure/mock-tasks";
+import { getTodayTasks } from "@/features/tasks/application/task-service";
 import { TaskList } from "@/features/tasks/ui/task-list";
 
-export default function TodayPage() {
-  const todayTasks = getTodayAndOverdueTasks();
+export default async function TodayPage() {
+  const todayTasks = await getTodayTasks();
 
   return (
     <section className="space-y-4">

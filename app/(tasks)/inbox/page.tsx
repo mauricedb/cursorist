@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAllTasks } from "@/features/tasks/infrastructure/mock-tasks";
+import { getInboxTasks } from "@/features/tasks/application/task-service";
 import { TaskList } from "@/features/tasks/ui/task-list";
 
-export default function InboxPage() {
-  const allTasks = getAllTasks();
+export default async function InboxPage() {
+  const allTasks = await getInboxTasks();
 
   return (
     <section className="space-y-4">

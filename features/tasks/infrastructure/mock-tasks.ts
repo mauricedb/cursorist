@@ -1,10 +1,4 @@
-export type Task = {
-  id: string;
-  title: string;
-  dueDate: string;
-  dueDateLabel: string;
-  completed: boolean;
-};
+import type { Task } from "@/features/tasks/domain/task";
 
 const todayDate = new Date();
 const tomorrowDate = new Date(todayDate);

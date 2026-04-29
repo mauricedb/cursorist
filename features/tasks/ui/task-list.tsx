@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Task } from "@/features/tasks/infrastructure/mock-tasks";
+import type { Task } from "@/features/tasks/domain/task";
 
 type TaskListProps = {
   initialTasks: Task[];
