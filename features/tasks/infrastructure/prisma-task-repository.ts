@@ -19,6 +19,11 @@ const mapToTaskView = (task: { id: string; title: string; dueDate: Date; complet
   completed: task.completed,
 });
 
+type CreateTaskInDbInput = {
+  title: string;
+  dueDate: Date;
+};
+
 const getStartOfTodayUtc = () => {
   const todayKey = new Date().toISOString().split("T")[0];
   return new Date(`${todayKey}T00:00:00.000Z`);
@@ -56,4 +61,17 @@ export async function updateTaskCompletionInDb(
     where: { id: taskId },
     data: { completed },
   });
+}
+
+export async function createTaskInDb(input: CreateTaskInDbInput): Promise<TaskView> {
+  const createdTask = await prisma.task.create({
+    data: {
+      id: crypto.randomUUID(),
+      title: input.title,
+      dueDate: input.dueDate,
+      completed: false,
+    },
+  });
+
+  return mapToTaskView(createdTask);
 }

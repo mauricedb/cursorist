@@ -1,5 +1,6 @@
 import type { Task } from "@/features/tasks/domain/task";
 import {
+  createTaskInDb,
   getAllOpenTasksFromDb,
   getTodayAndOverdueTasksFromDb,
   updateTaskCompletionInDb,
@@ -15,4 +16,13 @@ export async function getTodayTasks(): Promise<Task[]> {
 
 export async function setTaskCompleted(taskId: string, completed: boolean): Promise<void> {
   await updateTaskCompletionInDb(taskId, completed);
+}
+
+type CreateTaskInput = {
+  title: string;
+  dueDate: Date;
+};
+
+export async function createTask(input: CreateTaskInput): Promise<Task> {
+  return createTaskInDb(input);
 }

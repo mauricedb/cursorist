@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { Task } from "@/features/tasks/domain/task";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { TaskCreateForm } from "@/features/tasks/ui/task-create-form";
 
 type TaskListProps = {
   initialTasks: Task[];
@@ -74,6 +75,11 @@ export function TaskList({ initialTasks, emptyMessage, mode }: TaskListProps) {
 
   return (
     <div className="space-y-3">
+      <TaskCreateForm
+        onTaskCreated={(createdTask) => {
+          setTasks((currentTasks) => [createdTask, ...currentTasks]);
+        }}
+      />
       {visibleTasks.length > 0 ? (
         visibleTasks.map((task) => (
           <div
