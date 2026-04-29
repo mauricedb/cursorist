@@ -2,6 +2,7 @@ import type { Task } from "@/features/tasks/domain/task";
 import {
   getAllOpenTasksFromDb,
   getTodayAndOverdueTasksFromDb,
+  updateTaskCompletionInDb,
 } from "@/features/tasks/infrastructure/prisma-task-repository";
 
 export async function getInboxTasks(): Promise<Task[]> {
@@ -10,4 +11,8 @@ export async function getInboxTasks(): Promise<Task[]> {
 
 export async function getTodayTasks(): Promise<Task[]> {
   return getTodayAndOverdueTasksFromDb();
+}
+
+export async function setTaskCompleted(taskId: string, completed: boolean): Promise<void> {
+  await updateTaskCompletionInDb(taskId, completed);
 }

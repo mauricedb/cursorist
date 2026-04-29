@@ -25,6 +25,7 @@ const getDueDateColorClass = (task: Task, todayKey: string) => {
 
 export function TaskList({ initialTasks, emptyMessage, mode }: TaskListProps) {
   const [tasks, setTasks] = useState(initialTasks);
+  const [pendingTaskIds, setPendingTaskIds] = useState<string[]>([]);
 
   const visibleTasks = useMemo(() => {
     const todayKey = getTodayKey();
@@ -38,6 +39,37 @@ export function TaskList({ initialTasks, emptyMessage, mode }: TaskListProps) {
 
   const todayKey = getTodayKey();
 
+  const markTaskCompletion = async (taskId: string, completed: boolean) => {
+    setPendingTaskIds((currentIds) => [...currentIds, taskId]);
+    setTasks((currentTasks) =>
+      currentTasks.map((currentTask) =>
+        currentTask.id === taskId ? { ...currentTask, completed } : currentTask,
+      ),
+    );
+
+    try {
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ completed }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update task completion.");
+      }
+    } catch {
+      setTasks((currentTasks) =>
+        currentTasks.map((currentTask) =>
+          currentTask.id === taskId ? { ...currentTask, completed: !completed } : currentTask,
+        ),
+      );
+    } finally {
+      setPendingTaskIds((currentIds) => currentIds.filter((id) => id !== taskId));
+    }
+  };
+
   return (
     <div className="space-y-3">
       {visibleTasks.length > 0 ? (
@@ -50,13 +82,9 @@ export function TaskList({ initialTasks, emptyMessage, mode }: TaskListProps) {
               type="checkbox"
               className="mt-0.5 h-4 w-4 accent-[#6b8f5a]"
               checked={task.completed}
+              disabled={pendingTaskIds.includes(task.id)}
               onChange={(event) => {
-                const completed = event.target.checked;
-                setTasks((currentTasks) =>
-                  currentTasks.map((currentTask) =>
-                    currentTask.id === task.id ? { ...currentTask, completed } : currentTask,
-                  ),
-                );
+                void markTaskCompletion(task.id, event.target.checked);
               }}
               aria-label={`Mark "${task.title}" as done`}
             />

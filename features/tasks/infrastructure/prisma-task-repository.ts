@@ -47,3 +47,13 @@ export async function getTodayAndOverdueTasksFromDb(): Promise<TaskView[]> {
 
   return tasks.map(mapToTaskView);
 }
+
+export async function updateTaskCompletionInDb(
+  taskId: string,
+  completed: boolean,
+): Promise<void> {
+  await prisma.task.update({
+    where: { id: taskId },
+    data: { completed },
+  });
+}
