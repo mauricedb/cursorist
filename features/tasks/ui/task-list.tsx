@@ -20,10 +20,10 @@ const getDueDateColorClass = (task: Task, todayKey: string) => {
   }
 
   if (!task.completed && task.dueDate === todayKey) {
-    return "text-green-600";
+    return "text-neutral-600";
   }
 
-  return "text-[#756d68]";
+  return "text-neutral-500";
 };
 
 export function TaskList({ initialTasks, emptyMessage, mode }: TaskListProps) {
@@ -74,41 +74,47 @@ export function TaskList({ initialTasks, emptyMessage, mode }: TaskListProps) {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-6">
+      {visibleTasks.length > 0 ? (
+        <ul className="list-none space-y-3 p-0">
+          {visibleTasks.map((task) => (
+            <li
+              key={task.id}
+              className="flex items-start gap-4 rounded-xl border border-neutral-200 bg-white px-4 py-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+            >
+              <Checkbox
+                id={`task-checkbox-${task.id}`}
+                className="mt-0.5 size-6 rounded-full border-2 border-neutral-300 shadow-none after:hidden data-checked:border-[#db4c3f] data-checked:bg-[#db4c3f]"
+                checked={task.completed}
+                disabled={pendingTaskIds.includes(task.id)}
+                onCheckedChange={(checked) => {
+                  void markTaskCompletion(task.id, checked === true);
+                }}
+                aria-label={`Mark "${task.title}" as done`}
+              />
+              <div className="min-w-0 flex-1">
+                <Label
+                  htmlFor={`task-checkbox-${task.id}`}
+                  className="text-[15px] font-medium leading-snug text-neutral-900"
+                >
+                  {task.title}
+                </Label>
+                <p className={`mt-1 text-[13px] ${getDueDateColorClass(task, todayKey)}`}>
+                  {task.dueDateLabel}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-[15px] text-neutral-500">{emptyMessage}</p>
+      )}
+
       <TaskCreateForm
         onTaskCreated={(createdTask) => {
           setTasks((currentTasks) => [createdTask, ...currentTasks]);
         }}
       />
-      {visibleTasks.length > 0 ? (
-        visibleTasks.map((task) => (
-          <div
-            key={task.id}
-            className="flex items-start gap-3 rounded-lg border border-[#efe5da] bg-[#fffdf9] px-4 py-3"
-          >
-            <Checkbox
-              id={`task-checkbox-${task.id}`}
-              className="mt-0.5 data-[state=checked]:bg-[#6b8f5a] data-[state=checked]:border-[#6b8f5a]"
-              checked={task.completed}
-              disabled={pendingTaskIds.includes(task.id)}
-              onCheckedChange={(checked) => {
-                void markTaskCompletion(task.id, checked === true);
-              }}
-              aria-label={`Mark "${task.title}" as done`}
-            />
-            <div>
-              <Label htmlFor={`task-checkbox-${task.id}`} className="text-sm font-medium">
-                {task.title}
-              </Label>
-              <p className={`mt-1 text-xs ${getDueDateColorClass(task, todayKey)}`}>
-                Due: {task.dueDateLabel}
-              </p>
-            </div>
-          </div>
-        ))
-      ) : (
-        <p className="text-sm text-[#756d68]">{emptyMessage}</p>
-      )}
     </div>
   );
 }

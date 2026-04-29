@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getInboxTasks } from "@/features/tasks/application/task-service";
 import { TaskList } from "@/features/tasks/ui/task-list";
 
@@ -6,26 +5,13 @@ export default async function InboxPage() {
   const allTasks = await getInboxTasks();
 
   return (
-    <section className="space-y-4">
+    <section className="mx-auto max-w-3xl space-y-8">
       <header>
-        <h2 className="text-3xl font-semibold tracking-tight">Inbox</h2>
-        <p className="mt-1 text-sm text-[#6a635e]">
-          All tasks you need to complete.
-        </p>
+        <h1 className="text-4xl font-bold tracking-tight text-neutral-900">Inbox</h1>
+        <p className="mt-1.5 text-[15px] text-neutral-500">All open tasks in one place.</p>
       </header>
 
-      <Card className="border-[#eadfd3] bg-white">
-        <CardHeader>
-          <CardTitle className="text-base">All open tasks</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TaskList
-            initialTasks={allTasks}
-            emptyMessage="No open tasks."
-            mode="all-open"
-          />
-        </CardContent>
-      </Card>
+      <TaskList initialTasks={allTasks} emptyMessage="No open tasks." mode="all-open" />
     </section>
   );
 }

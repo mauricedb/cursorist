@@ -1,8 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { format } from "date-fns";
-import { CalendarIcon, XIcon } from "lucide-react";
+import {
+  CalendarPlus,
+  Flag,
+  Plus,
+  Tag,
+  Zap,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -20,6 +26,7 @@ type CreateTaskResponse = {
 };
 
 export function TaskCreateForm({ onTaskCreated }: TaskCreateFormProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState("");
   const [manualDueDate, setManualDueDate] = useState<Date | undefined>();
   const [showCalendar, setShowCalendar] = useState(false);
@@ -28,9 +35,8 @@ export function TaskCreateForm({ onTaskCreated }: TaskCreateFormProps) {
 
   const dueDateButtonLabel = useMemo(() => {
     if (!manualDueDate) {
-      return "Pick due date (optional)";
+      return null;
     }
-
     return format(manualDueDate, "PPP");
   }, [manualDueDate]);
 
@@ -38,6 +44,7 @@ export function TaskCreateForm({ onTaskCreated }: TaskCreateFormProps) {
     setTitle("");
     setManualDueDate(undefined);
     setShowCalendar(false);
+    setErrorMessage(null);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -78,45 +85,54 @@ export function TaskCreateForm({ onTaskCreated }: TaskCreateFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 space-y-3 rounded-lg border border-[#efe5da] bg-[#fffdf9] p-4">
-      <Input
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-        placeholder='Add task (e.g. "Add Playwright tests tomorrow")'
-        aria-label="Task title"
-        disabled={isSubmitting}
-      />
-
-      <div className="space-y-2">
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <div className="rounded-xl border border-neutral-200 bg-white px-2 py-2 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#db4c3f] text-white transition-opacity hover:opacity-90"
+            onClick={() => inputRef.current?.focus()}
+            aria-label="Focus new task field"
+          >
+            <Plus className="size-5" strokeWidth={2.5} aria-hidden />
+          </button>
+          <Input
+            ref={inputRef}
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            placeholder="Write a new task..."
+            aria-label="Task title"
+            disabled={isSubmitting}
+            className="h-10 min-w-32 flex-1 border-0 bg-transparent px-2 shadow-none focus-visible:ring-0 sm:min-w-0"
+          />
           <Button
             type="button"
-            variant="outline"
-            className={cn("justify-start text-left font-normal", !manualDueDate && "text-muted-foreground")}
-            onClick={() => setShowCalendar((current) => !current)}
+            variant="ghost"
+            size="icon-sm"
+            className={cn("text-[#db4c3f]", manualDueDate && "bg-neutral-100")}
+            onClick={() => setShowCalendar((c) => !c)}
             disabled={isSubmitting}
+            aria-label={showCalendar ? "Close due date calendar" : "Open due date calendar"}
           >
-            <CalendarIcon />
-            {dueDateButtonLabel}
+            <CalendarPlus className="size-4" strokeWidth={1.75} />
           </Button>
-          {manualDueDate ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setManualDueDate(undefined)}
-              disabled={isSubmitting}
-            >
-              <XIcon />
-              Clear date
-            </Button>
-          ) : null}
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Adding..." : "Add task"}
-          </Button>
+          <div className="flex items-center gap-0.5" aria-hidden>
+            <span className="inline-flex size-8 items-center justify-center text-amber-500">
+              <Zap className="size-4" strokeWidth={1.75} />
+            </span>
+            <span className="inline-flex size-8 items-center justify-center text-neutral-400">
+              <Tag className="size-4" strokeWidth={1.75} />
+            </span>
+            <span className="inline-flex size-8 items-center justify-center text-neutral-400">
+              <Flag className="size-4" strokeWidth={1.75} />
+            </span>
+          </div>
         </div>
+        {dueDateButtonLabel ? (
+          <p className="px-1 pb-1 pl-13 text-xs text-neutral-500">Due {dueDateButtonLabel}</p>
+        ) : null}
         {showCalendar ? (
-          <div className="w-fit rounded-lg border border-[#efe5da] bg-white">
+          <div className="mt-2 w-fit rounded-lg border border-neutral-200 bg-white px-2 pb-2 pt-1">
             <Calendar
               mode="single"
               selected={manualDueDate}
@@ -127,6 +143,25 @@ export function TaskCreateForm({ onTaskCreated }: TaskCreateFormProps) {
             />
           </div>
         ) : null}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="h-9 rounded-lg bg-[#db4c3f] px-5 text-white hover:bg-[#c73d31]"
+        >
+          {isSubmitting ? "Adding…" : "Add"}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-9 rounded-lg border-neutral-300 bg-white text-neutral-700"
+          onClick={clearForm}
+          disabled={isSubmitting}
+        >
+          Cancel
+        </Button>
       </div>
 
       {errorMessage ? <p className="text-sm text-red-600">{errorMessage}</p> : null}
